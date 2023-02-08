@@ -24,7 +24,7 @@ const getOneNote = async (id) => {
 const createNote = async (note) => {
   try {
     const newNote = await db.one(
-      "IOINSERT INTO notes(title, content, date, time, is_bookmark) VALUES($1,$2,$3,$4,$5) RETURNING * ",
+      "INSERT INTO notes(title, content, date, time, is_bookmark) VALUES($1, $2, $3, $4, $5) RETURNING * ",
       [note.title, note.content, note.date, note.time, note.is_bookmark]
     );
     return newNote;
@@ -36,7 +36,7 @@ const createNote = async (note) => {
 const updateNote = async (id, note) => {
   try {
     const updatedNote = await db.one(
-      "UPDATE notes SET title = $1, content = $2, date = $3, time = $4, is_bookmark = $5 WHERE id=$6 RETURN *",
+      "UPDATE notes SET title=$1, content=$2, date=$3, time=$4, is_bookmark=$5 WHERE id=$6 RETURNING *",
       [note.title, note.content, note.date, note.time, note.is_bookmark, id]
     );
     return updatedNote;
@@ -48,7 +48,7 @@ const updateNote = async (id, note) => {
 const deleteNote = async (id) => {
   try {
     const deletedNote = await db.one(
-      "DELETE FROM notes WHERE id=$1 RETURN *",
+      "DELETE FROM notes WHERE id=$1 RETURNING *",
       id
     );
     return deletedNote;

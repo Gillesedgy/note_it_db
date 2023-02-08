@@ -1,18 +1,15 @@
--- Reset and Create Database
-DROP DATABASE IF EXIST note_app
-CREATE DATABASE note_app
-
+DROP DATABASE IF EXISTS note_dev;
+CREATE DATABASE note_dev; 
 -- Connect to database
 \c note_dev
 
-DROG TABLE IF EXIST notes
--- CREATE TABLE 
+DROP TABLE IF EXISTS notes;
+
  CREATE TABLE notes (
-    id SERIAL PRIMARY KEY AUTOINCREMENT,
+    id SERIAL PRIMARY KEY,
     title TEXT NOT NULL,
     content VARCHAR(325) NOT NULL,
-    date DATE NOT NULL,
-    time TIMESTAMP NOT NULL,
-    -- image TEXT DEFAULT 'https://dummyimage.com/350x400/6e6c6e/e9e9f5.png&text=No+Image',
+    date DATE,
+    time TIME,
     is_bookmark BOOLEAN
 );
