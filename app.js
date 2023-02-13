@@ -15,7 +15,7 @@ app.use("/notes", notesController);
 
 // ROUTES
 app.get("/", (req, res) => {
-  res.send("Welcome to ThaNotes");
+  res.send("Welcome to Note-It");
 });
 
 app.get("*", (req, res) => {
