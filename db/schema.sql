@@ -7,7 +7,7 @@ DROP TABLE IF EXISTS notes;
 
  CREATE TABLE notes (
     id SERIAL PRIMARY KEY,
-    title TEXT NOT NULL,
+    title TEXT,
     content VARCHAR(325) NOT NULL,
     date TEXT,
     time TIME,
