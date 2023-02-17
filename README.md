@@ -1,11 +1,11 @@
 # Note-It Backend Server Repository
 ### Disclaimer
-* Should only Forked and Cloned  to be used with [GitHub Repo] (https://github.com/Gillesedgy/Module-4-Dashboard_Project)
+* Should only Forked and Cloned  to be used with [GitHub Repo](https://github.com/Gillesedgy/Module-4-Dashboard_Project)
 
 
 # Getting started with Note-It Backend Server
 * NO NEED TO FOR THIS REPO...
-* Clone this repository then run `npm install` to install all the dependencies required
+* `Clone` this repository then run `npm install` to install all the dependencies required
 * Create a new `.env` outside of source area
 * Create a new environment variable named `PORT` and set it to same value of your `frontend port` value. (EXAMPLE:3000)
 * Ensure you have a `database` running in order to make a connection and run `.sql` command from your terminal.
