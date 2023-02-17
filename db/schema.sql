@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS notes;
     id SERIAL PRIMARY KEY,
     title TEXT NOT NULL,
     content VARCHAR(325) NOT NULL,
-    date DATE,
+    date TEXT,
     time TIME,
     is_bookmark BOOLEAN
 );
