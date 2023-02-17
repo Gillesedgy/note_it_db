@@ -1,7 +1,6 @@
 # Note-It Backend Server Repository
 ### Disclaimer
-* Should only Forked and Cloned  to be used with [GitHub Repo](https://github.com/Gillesedgy/Module-4-Dashboard_Project)
-
+* Should only `Forked` and `Cloned` to be used with [GitHub Repo](https://github.com/Gillesedgy/Module-4-Dashboard_Project)
 
 # Getting started with Note-It Backend Server
 * NO NEED TO FOR THIS REPO...
@@ -13,6 +12,5 @@
 * To have any or all data associated with the database show, run `npm run db:seed` from your terminal.
 * If you are knowledgeable, feel free to add/remove any key or information to the database.
 * Once all commands are run and your are connected to the database, run `nodemon` from your terminal to launch the back-end repo.
-
 
 ##### Happy coding!!
