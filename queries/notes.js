@@ -1,14 +1,13 @@
 const db = require("../db/dbConfig.js");
 
-// Setting up for ROUTES
-
 //* INDEX
 const getAllNotes = async () => {
   try {
     const allNotes = await db.any("SELECT * FROM notes");
     return allNotes;
   } catch (error) {
-    return error;
+    console.error(`Error fetching notes: ${error}`);
+    throw new Error("Failed to fetch notes");
   }
 };
 //* SHOW
@@ -17,7 +16,8 @@ const getOneNote = async (id) => {
     const oneNote = await db.one("SELECT * FROM notes WHERE id=$1", id);
     return oneNote;
   } catch (error) {
-    return error;
+    console.error(`Error fetching note: ${error}`);
+    throw new Error("Failed to fetch note");
   }
 };
 //* POST -- CREATE
@@ -29,7 +29,8 @@ const createNote = async (note) => {
     );
     return newNote;
   } catch (error) {
-    return error;
+    console.error(`Error creating note: ${error}`);
+    throw new Error("Failed to create note");
   }
 };
 //* PUT -- UPDATE / EDIT
@@ -41,10 +42,11 @@ const updateNote = async (id, note) => {
     );
     return updatedNote;
   } catch (error) {
-    return error;
+    console.error(`Error updating note: ${error}`);
+    throw new Error("Failed to update note");
   }
 };
-//* DELETE -- ''
+//* DELETE --  REMOVE
 const deleteNote = async (id) => {
   try {
     const deletedNote = await db.one(
@@ -53,7 +55,8 @@ const deleteNote = async (id) => {
     );
     return deletedNote;
   } catch (error) {
-    return error;
+    console.error(`Error deleting note: ${error}`);
+    throw new Error("Failed to delete note");
   }
 };
 // Export FUNCTIONS
@@ -64,3 +67,5 @@ module.exports = {
   updateNote,
   deleteNote,
 };
+
+// this file defines and exports functions to perform CRUD
