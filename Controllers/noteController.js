@@ -1,7 +1,7 @@
 const express = require("express");
 // Set up Router using notes
 const notes = express.Router(); // NEW router object
-const errorHandler = require("./Middleware/errorHandling");
+const errorHandler = require("../Middleware/errorHandling");
 notes.use(errorHandler);
 //Import query functions from queries to perfrom CRUD
 const {
