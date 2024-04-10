@@ -1,19 +1,28 @@
 // DEPENDENCIES
 const express = require("express");
 const cors = require("cors");
-//CONTROLLER
+const bodyParser = require("body-parser");
+//CONTROLLERS
 const notesController = require("./Controllers/noteController");
-
+//Users
+const usersController = require("./Controllers/usersController");
 // CONFIGURATION
 const app = express();
 
 // MIDDLEWARE
 app.use(express.json());
-app.use(cors());
-
-app.use("/notes", notesController);
+// app.use(cors());
+app.use(
+  cors({
+    origin: "*",
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+app.use(express.urlencoded({ extended: false }));
 
 // ROUTES
+app.use("/notes", notesController);
+app.use("/user", usersController);
 app.get("/", (req, res) => {
   res.send("Welcome to Note-It");
 });
