@@ -57,16 +57,16 @@ users.post("/login", validateUser, async (req, res) => {
   try {
     const { username, password } = req.body;
     const user = await findByUsername(username); // log in with username
-    // console.log('User:', username);
+    console.log('User:', username);
 
     if (!user) {
       return res.status(401).json({ message: `User ${username} not found` });
     }
-    if (!password || !user.user_password) {
-      return res.status(401).json({ message: "Invalid Password Credentialss" });
-    }
-    //     console.log('Password:', password);
-    // console.log('Hashed Password:', user.password_hash);
+    // if (!password || !user.user_password) {
+    //   return res.status(401).json({ message: "Invalid Password Credentialss" });
+    // }
+        console.log('Password:', password);
+    console.log('Hashed Password:', user.password_hash);
 
     const isMatch = await bcrypt.compare(password, user.password_hash);
     if (!isMatch) {
