@@ -27,7 +27,7 @@ notes.get("/", async (req, res, next) => {
 });
 
 //SHOW - a single note from the database by calling  getone note providing {id} params
-notes.get("/:id", async (req, res) => {
+notes.get("/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
     const oneNote = await getOneNote(id);

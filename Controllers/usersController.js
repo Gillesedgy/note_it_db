@@ -55,15 +55,20 @@ users.post("/register", validateUser, async (req, res) => {
 // LOG IN ==> //TODO:MUST VALIDATE INFOR
 users.post("/login", validateUser, async (req, res) => {
   try {
-    //   const { email, password } = req.body;
-    // const user = await findUserByEmail(email);
     const { username, password } = req.body;
     const user = await findByUsername(username); // log in with username
+    // console.log('User:', username);
 
     if (!user) {
-      return res.status(401).json({ message: `User not found` });
+      return res.status(401).json({ message: `User ${username} not found` });
     }
-    const isMatch = await bcrypt.compare(password, user.user_password);
+    if (!password || !user.user_password) {
+      return res.status(401).json({ message: "Invalid Password Credentialss" });
+    }
+    //     console.log('Password:', password);
+    // console.log('Hashed Password:', user.password_hash);
+
+    const isMatch = await bcrypt.compare(password, user.password_hash);
     if (!isMatch) {
       // checking if pass is the same
       return res.status(401).json({ message: "Invalid credentials" });
@@ -109,7 +114,6 @@ users.get("/dashboard", userAuth, async (req, res) => {
     //DESTRUCTURE USER INFOR FOR PROFILE
     const { username, email } = user;
     res.status(200).json({ username, email });
-
   } catch (error) {
     res.status(500).json("Server Error");
   }

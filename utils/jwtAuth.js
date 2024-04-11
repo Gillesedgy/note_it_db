@@ -4,9 +4,9 @@ require("dotenv").config()
 
 const { JWT_SECRET_KEY } = process.env
 
-function jwtGenerator(user_id) {
+function jwtGenerator(userID) {
   const payload = {
-    id: user_id,
+    id: userID,
   }
   return jwt.sign(payload, JWT_SECRET_KEY, { expiresIn: "24hr" })
 }

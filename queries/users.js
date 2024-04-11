@@ -40,10 +40,9 @@ const getSingleUser = async (userId) => {
 // EMAIL
 const findUserByEmail = async (email) => {
   try {
-    const user = await db.oneOrNone(
-      "SELECT * FROM users WHERE email = $1",
-      [email]
-    );
+    const user = await db.oneOrNone("SELECT * FROM users WHERE email = $1", [
+      email,
+    ]);
     return user;
   } catch (error) {
     console.error(`Error finding user: ${error}`);
