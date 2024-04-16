@@ -23,7 +23,7 @@ DROP TABLE IF EXISTS notes;
     user_id INTEGER REFERENCES users(id),
     title TEXT  NOT NULL,
     content TEXT NOT NULL,
-    date TEXT  NOT NULL,
+    -- date TEXT  NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     is_bookmark BOOLEAN DEFAULT FALSE
 );

@@ -16,8 +16,8 @@ const {
 //
 const users = require("express").Router();
 
-//* Register User => SIGN UP USER
-users.post("/register", validateUser, async (req, res) => {
+//* signup User => SIGN UP USER √
+users.post("/signup", validateUser, async (req, res) => {
   try {
     //1 req body destructuring
     const { username, email, password } = req.body;
@@ -52,21 +52,19 @@ users.post("/register", validateUser, async (req, res) => {
   }
 });
 
-// LOG IN ==> //TODO:MUST VALIDATE INFOR
+// LOG IN ==> //TODO:MUST VALIDATE INFOR √
 users.post("/login", validateUser, async (req, res) => {
   try {
     const { username, password } = req.body;
     const user = await findByUsername(username); // log in with username
-    console.log('User:', username);
+    console.log("User:", username);
 
     if (!user) {
       return res.status(401).json({ message: `User ${username} not found` });
     }
-    // if (!password || !user.user_password) {
-    //   return res.status(401).json({ message: "Invalid Password Credentialss" });
-    // }
-        console.log('Password:', password);
-    console.log('Hashed Password:', user.password_hash);
+
+    console.log("Password:", password);
+    console.log("Hashed Password:", user.password_hash);
 
     const isMatch = await bcrypt.compare(password, user.password_hash);
     if (!isMatch) {
@@ -81,19 +79,31 @@ users.post("/login", validateUser, async (req, res) => {
     res.status(500).send("Server error");
   }
 });
-//* Get all Users
+//* Get all Users x
 users.get("/users", async (req, res) => {
   try {
     const users = await getAllUsers();
-    if (users) {
+    if (users[0]) {
       res.status(200).json(users);
     }
   } catch (error) {
     res.status(500).send("Server error");
   }
 });
+// //! SINGLE USER
+users.get("/users/:userId", async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const user = await getSingleUser(userId);
+    if (user) {
+      res.status(200).json(user);
+    }
+  } catch (error) {
+    res.status(500).send("User Not Found");
+  }
+});
 
-//* Get Registered User => Autheniticated  User
+//* Get signuped User => Autheniticated  User
 users.get("/verify", userAuth, async (req, res) => {
   try {
     res.json(true);

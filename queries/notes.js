@@ -10,10 +10,12 @@ const getAllNotes = async () => {
     throw new Error("Failed to fetch notes");
   }
 };
-//* SHOW
-const getOneNote = async (id) => {
+//* SHOW => ONE NOTE
+const getOneNote = async (userId) => {
   try {
-    const oneNote = await db.one("SELECT * FROM notes WHERE id=$1", id);
+    const oneNote = await db.oneOrNone("SELECT * FROM notes WHERE id=$1 LIMIT 1", [
+      userId,
+    ]);
     return oneNote;
   } catch (error) {
     console.error(`Error fetching note: ${error}`);
@@ -22,10 +24,11 @@ const getOneNote = async (id) => {
 };
 //* POST -- CREATE
 const createNote = async (note) => {
+  const { userId, title, content, date, is_bookmark } = note;
   try {
     const newNote = await db.one(
-      "INSERT INTO notes(title, content, date, time, is_bookmark) VALUES($1, $2, $3, $4, $5) RETURNING * ",
-      [note.title, note.content, note.date, note.time, note.is_bookmark]
+      "INSERT INTO notes (user_id, title, content, date, is_bookmark) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      [userId, title, content, date, is_bookmark]
     );
     return newNote;
   } catch (error) {
@@ -34,11 +37,15 @@ const createNote = async (note) => {
   }
 };
 //* PUT -- UPDATE / EDIT
-const updateNote = async (id, note) => {
+const updateNote = async (noteId, userId, note) => {
+  const { title, content, is_bookmark } = note;
   try {
+    if (!userId) throw new Error("User ID is undefined");
     const updatedNote = await db.one(
-      "UPDATE notes SET title=$1, content=$2, date=$3, time=$4, is_bookmark=$5 WHERE id=$6 RETURNING *",
-      [note.title, note.content, note.date, note.time, note.is_bookmark, id]
+      "UPDATE notes SET title=$1, content=$2, is_bookmark=$3, created_at=NOW() WHERE id=$4 AND user_id=$5 RETURNING *",
+
+      [title, content,  is_bookmark,  noteId,userId]
+
     );
     return updatedNote;
   } catch (error) {
@@ -47,11 +54,11 @@ const updateNote = async (id, note) => {
   }
 };
 //* DELETE --  REMOVE
-const deleteNote = async (id) => {
+const deleteNote = async (id, userID) => {
   try {
     const deletedNote = await db.one(
-      "DELETE FROM notes WHERE id=$1 RETURNING *",
-      id
+      "DELETE FROM notes WHERE id=$1 AND user_id=$2 RETURNING *",
+      [id, userID]
     );
     return deletedNote;
   } catch (error) {

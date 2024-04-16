@@ -1,7 +1,9 @@
 const express = require("express");
 // Set up Router using notes
 const notes = express.Router(); // NEW router object
+const userAuth = require("../Middleware/userAuth");
 const errorHandler = require("../Middleware/errorHandling");
+
 notes.use(errorHandler);
 //Import query functions from queries to perfrom CRUD
 const {
@@ -10,8 +12,10 @@ const {
   createNote,
   updateNote,
   deleteNote,
-} = require("../queries/notes"); // imported from as module located iun the query notes path ...
+} = require("../queries/notes");
 
+//USERS's  DB resources
+const { getUserNotes } = require("../queries/users");
 // INDEX - retrieves all the notes from the database
 notes.get("/", async (req, res, next) => {
   try {
@@ -23,6 +27,20 @@ notes.get("/", async (req, res, next) => {
     }
   } catch (error) {
     next(error);
+  }
+});
+//Notes Posted  by a user
+//! Fetching Notes  For {UserId:} √
+notes.get("/user/:userId", async (req, res) => {
+  const { userId } = req.params;
+  try {
+    console.log(`Fetching notes for user ID: ${userId}`);
+    const userNotes = await getUserNotes(userId);
+    if (userNotes) {
+      res.status(200).json(userNotes);
+    }
+  } catch (error) {
+    res.status(500).send("User Not Found");
   }
 });
 
@@ -41,10 +59,12 @@ notes.get("/:id", async (req, res, next) => {
   }
 });
 
-// CREATE - create a new note by calling the createNote functions... req.body as param
-notes.post("/", async (req, res) => {
+//* CREATE - create a new note by calling the createNote functions... req.body as param
+//! √
+notes.post("/user/:userId", async (req, res, next) => {
   try {
-    const newNote = await createNote(req.body);
+    const { userId } = req.params;
+    const newNote = await createNote({ ...req.body, userId });
     if (newNote) {
       res.status(200).json(newNote);
     } else {
@@ -58,10 +78,12 @@ notes.post("/", async (req, res) => {
 });
 
 // UPDATE - updates an existing note by calling the upadateNote function usoing their {id} in the params for the url path
-notes.put("/:id", async (req, res) => {
+notes.put("/:noteId",  async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const updatedNote = await updateNote(id, req.body);
+    const { noteId } = req.params;
+    const userId = req.user;
+    const note = req.body;
+    const updatedNote = await updateNote(noteId, userId, note);
     if (updatedNote) {
       res.status(200).json(updatedNote);
     } else {
@@ -76,10 +98,11 @@ notes.put("/:id", async (req, res) => {
 
 // DELETE - using the deleteNote function, caan delete a notew from the database using their specific {id} as parameter in the URL responding with the json object.
 
-notes.delete("/:id", async (req, res, next) => {
+notes.delete("/:id", userAuth, async (req, res, next) => {
   try {
     const { id } = req.params;
-    const deletedNote = await deleteNote(id);
+    const { userId } = req;
+    const deletedNote = await deleteNote(id, userId);
     if (!deletedNote) {
       return res.status(404).json({ error: "Note not found" });
     }
