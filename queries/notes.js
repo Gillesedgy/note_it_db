@@ -10,12 +10,13 @@ const getAllNotes = async () => {
     throw new Error("Failed to fetch notes");
   }
 };
-//* SHOW => ONE NOTE
-const getOneNote = async (userId) => {
+//* SHOW => GET one NOte by ID √
+const getOneNote = async (userId, noteId) => {
   try {
-    const oneNote = await db.oneOrNone("SELECT * FROM notes WHERE id=$1 LIMIT 1", [
-      userId,
-    ]);
+    const oneNote = await db.one(
+      "SELECT * FROM notes WHERE user_id=$1 AND id=$2 ",
+      [userId, noteId]
+    );
     return oneNote;
   } catch (error) {
     console.error(`Error fetching note: ${error}`);
@@ -37,15 +38,13 @@ const createNote = async (note) => {
   }
 };
 //* PUT -- UPDATE / EDIT
-const updateNote = async (noteId, userId, note) => {
-  const { title, content, is_bookmark } = note;
+const updateNote = async (noteId, userId, noteData) => {
+  const { title, content, is_bookmark } = noteData;
   try {
     if (!userId) throw new Error("User ID is undefined");
     const updatedNote = await db.one(
-      "UPDATE notes SET title=$1, content=$2, is_bookmark=$3, created_at=NOW() WHERE id=$4 AND user_id=$5 RETURNING *",
-
-      [title, content,  is_bookmark,  noteId,userId]
-
+      "UPDATE notes SET title = $1, content = $2, is_bookmark = $3 WHERE id = $4 AND user_id = $5 RETURNING *",
+      [title, content, is_bookmark, noteId, userId]
     );
     return updatedNote;
   } catch (error) {
@@ -54,13 +53,17 @@ const updateNote = async (noteId, userId, note) => {
   }
 };
 //* DELETE --  REMOVE
-const deleteNote = async (id, userID) => {
+const deleteNote = async (noteId, userId) => {
   try {
-    const deletedNote = await db.one(
-      "DELETE FROM notes WHERE id=$1 AND user_id=$2 RETURNING *",
-      [id, userID]
-    );
-    return deletedNote;
+    const note = await db.oneOrNone('SELECT * FROM notes WHERE id = $1 AND user_id = $2', [noteId, userId]);
+    if (note) {
+      const deletedNote = await db.one(
+        "DELETE FROM notes WHERE id=$1 AND user_id=$2 RETURNING *",
+        [noteId, userId]
+      );
+      return deletedNote;
+    }
+    return null;
   } catch (error) {
     console.error(`Error deleting note: ${error}`);
     throw new Error("Failed to delete note");
