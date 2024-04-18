@@ -104,28 +104,5 @@ users.get("/dashboard", async (req, res) => {
     res.status(500).json("Server Error");
   }
 });
-//* Get all Users x
-users.get("/users", async (req, res) => {
-  try {
-    const users = await getAllUsers();
-    if (users[0]) {
-      res.status(200).json(users);
-    }
-  } catch (error) {
-    res.status(500).send("Server error");
-  }
-});
-//! SINGLE USER
-users.get("/users/:userId", async (req, res) => {
-  const userId = req.user;
-  try {
-    const user = await getSingleUser(userId);
-    if (user) {
-      res.status(200).json(user);
-    }
-  } catch (error) {
-    res.status(500).send("User Not Found");
-  }
-});
 
 module.exports = users;
