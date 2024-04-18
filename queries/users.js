@@ -26,15 +26,15 @@ const findByUsername = async (username) => {
   }
 };
 //! ALL USERS IN DB  x
-// const getAllUsers = async () => {
-//   try {
-//     const allUsers = await db.any("SELECT * FROM users");
-//     return allUsers;
-//   } catch (error) {
-//     console.error(`Error fetching users: ${error}`);
-//     throw new Error("Failed to fetch users");
-//   }
-// };
+const getAllUsers = async () => {
+  try {
+    const allUsers = await db.any("SELECT * FROM users");
+    return allUsers;
+  } catch (error) {
+    console.error(`Error fetching users: ${error}`);
+    throw new Error("Failed to fetch users");
+  }
+};
 //* GET SINGLE USER BY ID => PROFILE x
 const getSingleUser = async (userId) => {
   try {
@@ -48,11 +48,12 @@ const getSingleUser = async (userId) => {
   }
 };
 //! USER NOTES √
-const getUserNotes = async (userID) => {
+const getUserNotes = async (userId) => {
+  // const { userId } = req.user.user_id; //
   try {
     const notes = await db.any(
       "SELECT  user_id, notes.id,title, content FROM notes INNER JOIN users ON notes.user_id = users.id WHERE notes.user_id =$1",
-      [userID]
+      [userId]
     );
     return notes;
   } catch (error) {

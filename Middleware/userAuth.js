@@ -1,34 +1,31 @@
-//8 => checking for valid token
-require("dotenv").config();
+// //8 => checking for valid token
 const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
-//*
-module.exports = async (req, res, next) => {
-  try {
-    const jwtToken = req.header("token"); //
-    console.log("JWTOKEN USER AUTHIRIZATION:", jwtToken);
-    if (!jwtToken) {
-      return res.status(403).json({ message: "You are not Authorized" });
-    }
-    // verify the token payload
-    const payload = jwt.verify(
-      jwtToken,
-      process.env.JWT_SECRET_KEY,
-      function (err, decoded) {
-        if (err) {
-          res.json({ status: `Failure ` });
-        } else {
-          res.json({ status: `Authorization Access For User ID: ${decoded.id} ` });
-        }
-      }
-    );
-    console.log("PAYLOAD:", payload);
-    req.user = payload.id;
-    console.log("REQ.USER:", req.user);
-    next(); //
-  } catch (error) {
-    console.error(error.message);
-    return res.status(403).json({ message: "You are not Authorized" });
+const userAuth = (req, res, next) => {
+  let token = req.headers.authorization;
+
+  if (!token) {
+    return res.status(401).json({ error: "Unauthorized - Missing Token" });
   }
+  token = token?.replace("Bearer ", "");
+
+  console.log("token =", process.env.JWT_SECRET_KEY);
+
+  jwt.verify(token, process.env.JWT_SECRET_KEY, (err, user) => {
+    console.log("error =", err);
+    if (err) {
+      return res.status(401).json({ error: "Unauthorized - Invalid Token" });
+    }
+
+    console.log("user in middle = ", user);
+
+    req.user = user;
+
+    console.log("set user in middle = ", user);
+
+    next();
+  });
 };
-//*
+
+module.exports = userAuth;

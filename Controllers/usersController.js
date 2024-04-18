@@ -1,7 +1,7 @@
 //6
 const bcrypt = require("bcrypt");
 const jwtAuth = require("../utils/jwtAuth");
-const userAuth = require("../Middleware/userAuth");
+
 require("dotenv").config();
 //* Middleware
 const validateUser = require("../Middleware/userError"); //TODO:MUST VALIDATE INFOR
@@ -41,19 +41,18 @@ users.post("/signup", validateUser, async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
     //4 enter new user => CREATE USER HERE
     const newUser = await createUser(username, email, hashedPassword);
-
     //5 Generate token =>
     const token = jwtAuth(newUser.id);
 
     res.status(201).json({ newUser, token });
   } catch (error) {
     console.error(error.message);
-    res.status(500).send("Server Error");
+    res.status(500).send("Server Error", error);
   }
 });
 
 // LOG IN ==> //TODO:MUST VALIDATE INFOR √
-users.post("/login", validateUser, async (req, res) => {
+users.post("/signin", async (req, res) => {
   try {
     const { username, password } = req.body;
     const user = await findByUsername(username); // log in with username
@@ -79,32 +78,9 @@ users.post("/login", validateUser, async (req, res) => {
     res.status(500).send("Server error");
   }
 });
-//* Get all Users x
-users.get("/users", async (req, res) => {
-  try {
-    const users = await getAllUsers();
-    if (users[0]) {
-      res.status(200).json(users);
-    }
-  } catch (error) {
-    res.status(500).send("Server error");
-  }
-});
-// //! SINGLE USER
-users.get("/users/:userId", async (req, res) => {
-  const { userId } = req.params;
-  try {
-    const user = await getSingleUser(userId);
-    if (user) {
-      res.status(200).json(user);
-    }
-  } catch (error) {
-    res.status(500).send("User Not Found");
-  }
-});
 
 //* Get signuped User => Autheniticated  User
-users.get("/verify", userAuth, async (req, res) => {
+users.get("/verify", async (req, res) => {
   try {
     res.json(true);
   } catch (error) {
@@ -112,7 +88,7 @@ users.get("/verify", userAuth, async (req, res) => {
   }
 });
 //* Get  dashboard or Profile
-users.get("/dashboard", userAuth, async (req, res) => {
+users.get("/dashboard", async (req, res) => {
   // const userID = req
   console.log("URSER REQ:", req.user);
   try {
@@ -126,6 +102,29 @@ users.get("/dashboard", userAuth, async (req, res) => {
     res.status(200).json({ username, email });
   } catch (error) {
     res.status(500).json("Server Error");
+  }
+});
+//* Get all Users x
+users.get("/users", async (req, res) => {
+  try {
+    const users = await getAllUsers();
+    if (users[0]) {
+      res.status(200).json(users);
+    }
+  } catch (error) {
+    res.status(500).send("Server error");
+  }
+});
+//! SINGLE USER
+users.get("/users/:userId", async (req, res) => {
+  const userId = req.user;
+  try {
+    const user = await getSingleUser(userId);
+    if (user) {
+      res.status(200).json(user);
+    }
+  } catch (error) {
+    res.status(500).send("User Not Found");
   }
 });
 
