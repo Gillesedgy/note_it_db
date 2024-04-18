@@ -10,6 +10,7 @@ const usersController = require("./Controllers/usersController");
 const app = express();
 
 // MIDDLEWARE
+const userAuth = require("./Middleware/userAuth")
 app.use(express.json());
 // app.use(cors());
 app.use(
@@ -21,7 +22,7 @@ app.use(
 app.use(express.urlencoded({ extended: false }));
 
 // ROUTES
-app.use("/notes", notesController);
+app.use("/notes",notesController);
 app.use("/user", usersController);
 app.get("/", (req, res) => {
   res.send("Welcome to Note-It");

@@ -12,6 +12,7 @@ const getAllNotes = async () => {
 };
 //* SHOW => GET one NOte by ID √
 const getOneNote = async (userId, noteId) => {
+  // const { userId } = req.user.user_id; //
   try {
     const oneNote = await db.one(
       "SELECT * FROM notes WHERE user_id=$1 AND id=$2 ",
@@ -25,11 +26,11 @@ const getOneNote = async (userId, noteId) => {
 };
 //* POST -- CREATE
 const createNote = async (note) => {
-  const { userId, title, content, date, is_bookmark } = note;
+  const { userId, title, content,  is_bookmark } = note;
   try {
     const newNote = await db.one(
-      "INSERT INTO notes (user_id, title, content, date, is_bookmark) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-      [userId, title, content, date, is_bookmark]
+      "INSERT INTO notes (user_id, title, content, is_bookmark) VALUES ($1, $2, $3, $4) RETURNING *",
+      [userId, title, content, is_bookmark]
     );
     return newNote;
   } catch (error) {
@@ -55,7 +56,10 @@ const updateNote = async (noteId, userId, noteData) => {
 //* DELETE --  REMOVE
 const deleteNote = async (noteId, userId) => {
   try {
-    const note = await db.oneOrNone('SELECT * FROM notes WHERE id = $1 AND user_id = $2', [noteId, userId]);
+    const note = await db.oneOrNone(
+      "SELECT * FROM notes WHERE id = $1 AND user_id = $2",
+      [noteId, userId]
+    );
     if (note) {
       const deletedNote = await db.one(
         "DELETE FROM notes WHERE id=$1 AND user_id=$2 RETURNING *",
