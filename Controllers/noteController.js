@@ -52,7 +52,6 @@ notes.post("/user/:userId/create-a-note", async (req, res, next) => {
   }
 }); //Notes Posted  by a user
 //! Fetching Notes  For A USER WITH {UserId:} √
-
 notes.get("/user/:userId", async (req, res) => {
   const userId = req.user.id;
   try {

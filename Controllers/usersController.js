@@ -1,6 +1,7 @@
 //6
 const bcrypt = require("bcrypt");
 const jwtAuth = require("../utils/jwtAuth");
+const userAuth = require("../Middleware/userAuth");
 
 require("dotenv").config();
 //* Middleware
@@ -16,7 +17,7 @@ const {
 //
 const users = require("express").Router();
 
-//* signup User => SIGN UP USER √
+//*  SIGN UP USER √
 users.post("/signup", validateUser, async (req, res) => {
   try {
     //1 req body destructuring
@@ -79,8 +80,8 @@ users.post("/signin", async (req, res) => {
   }
 });
 
-//* Get signuped User => Autheniticated  User
-users.get("/verify", async (req, res) => {
+//* Get signed up User => Autheniticated  User
+users.get("/verify", userAuth, async (req, res) => {
   try {
     res.json(true);
   } catch (error) {
@@ -88,7 +89,7 @@ users.get("/verify", async (req, res) => {
   }
 });
 //* Get  dashboard or Profile
-users.get("/dashboard", async (req, res) => {
+users.get("/dashboard", userAuth, async (req, res) => {
   // const userID = req
   console.log("URSER REQ:", req.user);
   try {
