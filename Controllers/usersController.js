@@ -2,11 +2,9 @@
 const bcrypt = require("bcrypt");
 const jwtAuth = require("../utils/jwtAuth");
 const userAuth = require("../Middleware/userAuth");
-
 require("dotenv").config();
-//* Middleware
 const validateUser = require("../Middleware/userError"); //TODO:MUST VALIDATE INFOR
-//* jwt Auth
+
 const {
   getAllUsers,
   getSingleUser,
@@ -17,12 +15,9 @@ const {
 //
 const users = require("express").Router();
 
-//*  SIGN UP USER √
 users.post("/signup", validateUser, async (req, res) => {
   try {
-    //1 req body destructuring
     const { username, email, password } = req.body;
-    // 2check for user (exists or not => username or email)
     const userByUsername = await findByUsername(username);
     const userByEmail = await findUserByEmail(email);
 
@@ -36,11 +31,10 @@ users.post("/signup", validateUser, async (req, res) => {
         .status(409)
         .json({ message: `Sorry, ${userByEmail.email} already taken` });
     }
-    //3 bcrypt hash user info
+
     const saltRounds = 10;
     const salt = await bcrypt.genSalt(saltRounds);
     const hashedPassword = await bcrypt.hash(password, salt);
-    //4 enter new user => CREATE USER HERE
     const newUser = await createUser(username, email, hashedPassword);
     //5 Generate token =>
     const token = jwtAuth(newUser.id);
@@ -52,7 +46,6 @@ users.post("/signup", validateUser, async (req, res) => {
   }
 });
 
-// LOG IN ==> //TODO:MUST VALIDATE INFOR √
 users.post("/signin", async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -68,7 +61,6 @@ users.post("/signin", async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.password_hash);
     if (!isMatch) {
-      // checking if pass is the same
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
@@ -80,7 +72,6 @@ users.post("/signin", async (req, res) => {
   }
 });
 
-//* Get signed up User => Autheniticated  User
 users.get("/verify", userAuth, async (req, res) => {
   try {
     res.json(true);
@@ -88,7 +79,7 @@ users.get("/verify", userAuth, async (req, res) => {
     res.status(500).send("Server error");
   }
 });
-//* Get  dashboard or Profile
+
 users.get("/dashboard", userAuth, async (req, res) => {
   // const userID = req
   console.log("URSER REQ:", req.user);
@@ -98,7 +89,7 @@ users.get("/dashboard", userAuth, async (req, res) => {
     if (!user.id) {
       res.status(404).json({ message: `${user.id} Not Found` });
     }
-    //DESTRUCTURE USER INFOR FOR PROFILE
+
     const { username, email } = user;
     res.status(200).json({ username, email });
   } catch (error) {
