@@ -1,10 +1,8 @@
 const express = require("express");
-// Set up Router using notes
-const notes = express.Router(); // NEW router object
+const notes = express.Router(); //
 const errorHandler = require("../Middleware/errorHandling");
 
 notes.use(errorHandler);
-//Import query functions from queries to perfrom CRUD
 const {
   getAllNotes,
   getOneNote,
@@ -12,26 +10,21 @@ const {
   updateNote,
   deleteNote,
 } = require("../queries/notes");
-
-//USERS's  DB resources
 const { getUserNotes } = require("../queries/users");
-// INDEX - retrieves all the notes from the database
-//ToDO: Change this for hom page
+
+//ToDO: Change this for home page
 notes.get("/", async (req, res, next) => {
   try {
     const allNotes = await getAllNotes();
     if (allNotes[0]) {
       res.status(200).json(allNotes);
     } else {
-      res.status(500).json({ error: "server error" });
+      res.status(500).json({ error: "No notes found" });
     }
   } catch (error) {
     next(error);
   }
 });
-
-//* CREATE - create a new note by calling the createNote functions... req.body as param
-//! √
 
 notes.post("/user/:userId/create-a-note", async (req, res, next) => {
   try {
@@ -50,12 +43,11 @@ notes.post("/user/:userId/create-a-note", async (req, res, next) => {
       .status(error.status || 500)
       .json({ message: error.message || "Server error" });
   }
-}); //Notes Posted  by a user
-//! Fetching Notes  For A USER WITH {UserId:} √
+});
+
 notes.get("/user/:userId", async (req, res) => {
   const userId = req.user.id;
   try {
-    // console.log(`Fetching notes for user ID: ${userId}`);
     const userNotes = await getUserNotes(userId);
     if (userNotes) {
       res.status(200).json(userNotes);
@@ -64,7 +56,6 @@ notes.get("/user/:userId", async (req, res) => {
     res.status(500).send("User Not Found", error);
   }
 });
-//SHOW - a single note from the database by calling  getone note providing {id} params
 
 notes.get("/user/:userId/note/:noteId", async (req, res, next) => {
   try {
@@ -80,12 +71,9 @@ notes.get("/user/:userId/note/:noteId", async (req, res, next) => {
   }
 });
 
-// UPDATE - updates an existing note by calling the upadateNote function usoing their {id} in the params for the url path
-
 notes.put("/user/:userId/note/:noteId", async (req, res, next) => {
   try {
     const { noteId, userId } = req.params;
-    // const {}= req.user;
     const noteData = req.body;
     const updatedNote = await updateNote(noteId, userId, noteData);
     if (updatedNote) {
@@ -99,8 +87,6 @@ notes.put("/user/:userId/note/:noteId", async (req, res, next) => {
     next(error);
   }
 });
-
-// DELETE - using the deleteNote function, caan delete a notew from the database using their specific {id} as parameter in the URL responding with the json object.
 
 notes.delete("/user/:userId/note/:noteId", async (req, res, next) => {
   try {
@@ -117,5 +103,5 @@ notes.delete("/user/:userId/note/:noteId", async (req, res, next) => {
     next(error);
   }
 });
-// EXPORT ROUTER (/NOTES)
+
 module.exports = notes;
